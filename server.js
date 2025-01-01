@@ -207,17 +207,52 @@ app.get('/api/articles', async (req, res) => {
 });
 
 app.post('/api/articles', async (req, res) => {
-  const article = new Article({
-    title: req.body.title,
-    content: req.body.content,
-    image: req.body.image
-  });
-
   try {
+    console.log('Incoming article data:', {
+      title: req.body.title,
+      contentLength: req.body.content?.length,
+      image: req.body.image ? 'present' : 'missing'
+    });
+
+    // Validate required fields
+    if (!req.body.title || !req.body.content) {
+      return res.status(400).json({ 
+        message: 'Campos obrigatórios faltando',
+        requiredFields: ['title', 'content'],
+        received: {
+          title: !!req.body.title,
+          content: !!req.body.content
+        }
+      });
+    }
+
+    const article = new Article({
+      title: req.body.title,
+      content: req.body.content,
+      image: req.body.image
+    });
+
     const newArticle = await article.save();
     res.status(201).json(newArticle);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error('Erro ao criar artigo:', {
+      message: err.message,
+      errors: err.errors,
+      stack: err.stack
+    });
+
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({ 
+        message: 'Erro de validação',
+        errors 
+      });
+    }
+
+    res.status(500).json({ 
+      message: 'Erro interno do servidor',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 

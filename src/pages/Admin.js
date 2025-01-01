@@ -93,11 +93,23 @@ const Admin = ({ articles, setArticles }) => {
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Erro ao salvar artigo:', error);
-      if (error.response && error.response.status === 413) {
-        alert('O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.');
-      } else if (error.response?.status === 500) {
-        alert('Erro no servidor ao salvar artigo. Verifique se o servidor está rodando corretamente.');
+      console.error('Erro ao salvar artigo:', {
+        message: error.message,
+        response: error.response?.data,
+        config: error.config
+      });
+
+      if (error.response) {
+        if (error.response.status === 400) {
+          const errors = error.response.data?.errors || [error.response.data?.message];
+          alert(`Erro de validação:\n${errors.join('\n')}`);
+        } else if (error.response.status === 413) {
+          alert('O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.');
+        } else if (error.response.status === 500) {
+          alert('Erro no servidor ao salvar artigo. Verifique se o servidor está rodando corretamente.');
+        } else {
+          alert(`Erro ao salvar artigo: ${error.response.status} - ${error.response.statusText}`);
+        }
       } else if (error.code === 'ECONNABORTED') {
         alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
       } else {
