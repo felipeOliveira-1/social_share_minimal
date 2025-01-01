@@ -54,7 +54,7 @@ const connectDB = async () => {
 const startServer = async () => {
   await connectDB();
   
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
     console.log('Available endpoints:');
     console.log('GET /health');
@@ -63,6 +63,18 @@ const startServer = async () => {
     console.log('POST /api/articles');
     console.log('PUT /api/articles/:id');
     console.log('DELETE /api/articles/:id');
+  });
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Erro: A porta ${PORT} já está em uso.`);
+      console.log('Tente os seguintes passos:');
+      console.log('1. Feche outras instâncias do servidor que possam estar rodando');
+      console.log(`2. Ou use uma porta diferente modificando a variável PORT no arquivo .env`);
+      process.exit(1);
+    } else {
+      throw error;
+    }
   });
 };
 
