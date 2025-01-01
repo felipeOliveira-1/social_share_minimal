@@ -24,6 +24,24 @@ mongoose.connect(process.env.MONGODB_URI, {
   process.exit(1); // Exit if we can't connect to MongoDB
 });
 
+// Health check endpoint - moved before API routes
+app.get('/api/health', (req, res) => {
+  try {
+    const mongoConnected = mongoose.connection.readyState === 1;
+    res.status(200).json({ 
+      status: 'ok', 
+      mongoConnected,
+      serverTime: new Date().toISOString(),
+      memoryUsage: process.memoryUsage()
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      status: 'error',
+      error: error.message 
+    });
+  }
+});
+
 // Rotas da API
 app.get('/api/articles', async (req, res) => {
   try {
@@ -75,23 +93,6 @@ app.delete('/api/articles/:id', async (req, res) => {
   }
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  try {
-    const mongoConnected = mongoose.connection.readyState === 1;
-    res.status(200).json({ 
-      status: 'ok', 
-      mongoConnected,
-      serverTime: new Date().toISOString(),
-      memoryUsage: process.memoryUsage()
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      status: 'error',
-      error: error.message 
-    });
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
