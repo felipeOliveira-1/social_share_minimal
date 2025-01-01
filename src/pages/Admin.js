@@ -192,7 +192,7 @@ const Admin = ({ articles, setArticles }) => {
           ) : (
             <div className="space-y-4">
               {articles.map((article) => (
-                <div key={article.id} className="border-b border-gray-200 pb-4">
+                <div key={article._id} className="border-b border-gray-200 pb-4">
                   <h3 className="text-lg font-semibold">{article.title}</h3>
                   {article.image && (
                     <img src={article.image} alt={article.title} className="mt-2 max-w-xs rounded-md" />
@@ -207,7 +207,7 @@ const Admin = ({ articles, setArticles }) => {
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleDeleteArticle(article.id)}
+                      onClick={() => handleDeleteArticle(article._id)}
                     >
                       Excluir
                     </Button>
