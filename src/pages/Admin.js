@@ -29,6 +29,12 @@ const Admin = () => {
   const handleSaveArticle = (e) => {
     e.preventDefault();
     
+    // Verifica se o título foi preenchido
+    if (!currentArticle.title.trim()) {
+      alert('Por favor, insira um título para o artigo');
+      return;
+    }
+    
     if (isEditing) {
       setArticles(articles.map(article => 
         article.id === currentArticle.id ? currentArticle : article
@@ -37,6 +43,7 @@ const Admin = () => {
       setArticles([...articles, { ...currentArticle, id: uuidv4() }]);
     }
     
+    // Limpa o formulário
     setCurrentArticle({
       id: '',
       title: '',
@@ -80,6 +87,7 @@ const Admin = () => {
                 value={currentArticle.title}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                placeholder="Digite o título do artigo"
                 required
               />
             </div>
