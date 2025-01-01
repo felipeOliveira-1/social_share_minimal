@@ -24,6 +24,15 @@ function App() {
           alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
         } else if (error.response?.status === 500) {
           alert('Erro no servidor ao buscar artigos. Verifique se o MongoDB está rodando e tente novamente.');
+          // Try to get health status
+          try {
+            const health = await axios.get('http://localhost:5000/api/health');
+            if (!health.data.mongoConnected) {
+              alert('O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
+            }
+          } catch (healthError) {
+            console.error('Erro ao verificar saúde do servidor:', healthError);
+          }
         } else if (error.response?.status === 404) {
           alert('Endpoint da API não encontrado. Verifique se o servidor está configurado corretamente.');
         } else {

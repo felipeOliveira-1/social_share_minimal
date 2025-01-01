@@ -5,8 +5,8 @@ import Card from '../components/Card';
 import { v4 as uuidv4 } from 'uuid';
 
 // Configure axios to handle larger payloads
-axios.defaults.maxContentLength = 50 * 1024 * 1024; // 50MB
-axios.defaults.maxBodyLength = 50 * 1024 * 1024; // 50MB
+axios.defaults.maxContentLength = 100 * 1024 * 1024; // 100MB
+axios.defaults.maxBodyLength = 100 * 1024 * 1024; // 100MB
 
 const Admin = ({ articles, setArticles }) => {
   const [currentArticle, setCurrentArticle] = useState({
@@ -82,6 +82,8 @@ const Admin = ({ articles, setArticles }) => {
       console.error('Erro ao salvar artigo:', error);
       if (error.response && error.response.status === 413) {
         alert('O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.');
+      } else if (error.response?.status === 500) {
+        alert('Erro no servidor ao salvar artigo. Verifique se o MongoDB está rodando e tente novamente.');
       } else {
         alert('Erro ao salvar artigo. Por favor, tente novamente.');
       }
