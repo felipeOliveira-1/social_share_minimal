@@ -145,19 +145,36 @@ app.get('/test', (req, res) => {
 // Rotas da API
 app.get('/api/articles/:id', async (req, res) => {
   try {
-    console.log(`Buscando artigo com ID: ${req.params.id}`);
+    console.log(`[${new Date().toISOString()}] GET /api/articles/${req.params.id}`);
+    console.log('Request headers:', req.headers);
     
     // Verifica se o ID é válido
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      console.log(`ID inválido: ${req.params.id}`);
-      return res.status(400).json({ message: 'ID do artigo inválido' });
+      console.error(`ID inválido: ${req.params.id}`);
+      return res.status(400).json({ 
+        message: 'ID do artigo inválido',
+        receivedId: req.params.id,
+        expectedFormat: '24 character hex string'
+      });
     }
 
+    console.log('Querying database for article...');
     const article = await Article.findById(req.params.id).maxTimeMS(30000);
-    console.log(`Artigo encontrado: ${article}`);
+    
     if (!article) {
-      return res.status(404).json({ message: 'Artigo não encontrado' });
+      console.error(`Artigo não encontrado para ID: ${req.params.id}`);
+      return res.status(404).json({ 
+        message: 'Artigo não encontrado',
+        articleId: req.params.id
+      });
     }
+    
+    console.log('Article found:', {
+      id: article._id,
+      title: article.title,
+      contentLength: article.content?.length || 0
+    });
+    
     res.json(article);
   } catch (err) {
     console.error('Erro ao buscar artigo:', err);
@@ -227,11 +244,24 @@ app.use((err, req, res, next) => {
 
 // Catch-all route for undefined endpoints
 app.use((req, res) => {
-  console.log(`Route not found: ${req.method} ${req.url}`);
+  console.error(`Route not found: ${req.method} ${req.url}`);
+  console.log('Request headers:', req.headers);
+  console.log('Request body:', req.body);
+  
   res.status(404).json({ 
     error: 'Endpoint not found',
     method: req.method,
-    path: req.url
+    path: req.url,
+    timestamp: new Date().toISOString(),
+    availableEndpoints: [
+      'GET /health',
+      'GET /test',
+      'GET /api/articles',
+      'GET /api/articles/:id',
+      'POST /api/articles',
+      'PUT /api/articles/:id',
+      'DELETE /api/articles/:id'
+    ]
   });
 });
 
