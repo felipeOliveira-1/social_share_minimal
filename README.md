@@ -12,7 +12,7 @@ Um projeto minimalista para compartilhar artigos sobre IA e tecnologia.
 ## Tecnologias
 
 - React
-- CSS moderno (variáveis CSS, flexbox)
+- Tailwind CSS
 - Font Awesome
 - Create React App
 
