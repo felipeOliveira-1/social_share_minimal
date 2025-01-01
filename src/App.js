@@ -40,7 +40,7 @@ function App() {
       </main>
     </div>
   </Route>
-  <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
             element={
