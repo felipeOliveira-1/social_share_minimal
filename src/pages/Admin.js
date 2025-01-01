@@ -72,18 +72,38 @@ const Admin = ({ articles, setArticles }) => {
     try {
       const articleData = {
         ...currentArticle,
-        slug: generateSlug(currentArticle.title)
+        slug: generateSlug(currentArticle.title),
+        createdAt: new Date() // Adiciona timestamp
       };
-      
+
+      // Validação adicional no frontend
+      if (!articleData.title || articleData.title.trim().length < 5) {
+        throw new Error('O título deve ter pelo menos 5 caracteres');
+      }
+      if (!articleData.content || articleData.content.trim().length < 50) {
+        throw new Error('O conteúdo deve ter pelo menos 50 caracteres');
+      }
+
       let response;
-      if (isEditing) {
-        response = await axios.put(`http://localhost:5001/api/articles/${currentArticle._id}`, articleData);
-        setArticles(articles.map(article => 
-          article._id === currentArticle._id ? response.data : article
-        ));
-      } else {
-        response = await axios.post('http://localhost:5001/api/articles', articleData);
-        setArticles([...articles, response.data]);
+      try {
+        if (isEditing) {
+          response = await axios.put(`http://localhost:5001/api/articles/${currentArticle._id}`, articleData, {
+            timeout: 10000 // 10 segundos timeout
+          });
+          setArticles(articles.map(article => 
+            article._id === currentArticle._id ? response.data : article
+          ));
+        } else {
+          response = await axios.post('http://localhost:5001/api/articles', articleData, {
+            timeout: 10000 // 10 segundos timeout
+          });
+          setArticles([...articles, response.data]);
+        }
+      } catch (error) {
+        if (error.response?.data?.errors) {
+          throw new Error(error.response.data.errors.join('\n'));
+        }
+        throw error;
       }
       
       setCurrentArticle({

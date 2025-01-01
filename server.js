@@ -215,14 +215,34 @@ app.post('/api/articles', async (req, res) => {
     });
 
     // Validate required fields
-    if (!req.body.title || !req.body.content) {
+    // Validação inicial dos campos obrigatórios
+    const requiredFields = ['title', 'content'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+    
+    if (missingFields.length > 0) {
       return res.status(400).json({ 
         message: 'Campos obrigatórios faltando',
-        requiredFields: ['title', 'content'],
+        errors: missingFields.map(field => `${field} é obrigatório`),
+        requiredFields,
         received: {
           title: !!req.body.title,
           content: !!req.body.content
         }
+      });
+    }
+
+    // Validação adicional do tamanho dos campos
+    const validationErrors = [];
+    if (req.body.title.trim().length < 5) {
+      validationErrors.push('O título deve ter pelo menos 5 caracteres');
+    }
+    if (req.body.content.trim().length < 50) {
+      validationErrors.push('O conteúdo deve ter pelo menos 50 caracteres');
+    }
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        message: 'Erros de validação',
+        errors: validationErrors
       });
     }
 
