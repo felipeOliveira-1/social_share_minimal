@@ -37,11 +37,10 @@ function App() {
             </div>
           </Card>
         </div>
-            </div>
-          </main>
-        </div>
-          </Route>
-          <Route path="/login" element={<Login />} />
+      </main>
+    </div>
+  </Route>
+  <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
             element={
