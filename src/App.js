@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import Button from './components/Button';
 import Card from './components/Card';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import Article from './pages/Article';
 import AuthRoute from './components/AuthRoute';
 
 function App() {
@@ -89,22 +90,30 @@ function App() {
                     ) : (
                       <div className="space-y-6">
                         {articles.map((article) => (
-                          <div key={article._id} className="border-b border-gray-200 pb-6">
-                            <h3 className="text-2xl font-bold mb-2">{article.title}</h3>
-                            {article.image && (
-                              <img 
-                                src={article.image}
-                                alt={article.title}
-                                className="my-4 rounded-lg shadow-md max-w-full h-auto"
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                }}
-                              />
-                            )}
-                            <p className="text-gray-700 whitespace-pre-line">
-                              {article.content}
-                            </p>
-                          </div>
+                          <Link 
+                            to={`/article/${article._id}`} 
+                            key={article._id} 
+                            className="block border-b border-gray-200 pb-6 hover:bg-gray-50 transition-colors duration-200"
+                          >
+                            <div className="flex items-start space-x-4">
+                              {article.image && (
+                                <img 
+                                  src={article.image}
+                                  alt={article.title}
+                                  className="w-32 h-32 object-cover rounded-lg shadow-md"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              )}
+                              <div>
+                                <h3 className="text-2xl font-bold mb-2">{article.title}</h3>
+                                <p className="text-gray-600 line-clamp-2">
+                                  {article.content}
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
                         ))}
                       </div>
                     )}
@@ -122,6 +131,7 @@ function App() {
             </>
           } />
           <Route path="/login" element={<Login />} />
+          <Route path="/article/:id" element={<Article />} />
           <Route
             path="/admin"
             element={
