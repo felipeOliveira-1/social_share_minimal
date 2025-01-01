@@ -143,6 +143,27 @@ app.get('/test', (req, res) => {
 });
 
 // Rotas da API
+app.get('/api/articles/:id', async (req, res) => {
+  try {
+    // Verifica se o ID é válido
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'ID do artigo inválido' });
+    }
+
+    const article = await Article.findById(req.params.id).maxTimeMS(30000);
+    if (!article) {
+      return res.status(404).json({ message: 'Artigo não encontrado' });
+    }
+    res.json(article);
+  } catch (err) {
+    console.error('Erro ao buscar artigo:', err);
+    res.status(500).json({ 
+      message: 'Erro interno do servidor',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+});
+
 app.get('/api/articles', async (req, res) => {
   try {
     const articles = await Article.find().maxTimeMS(30000); // Increased timeout
