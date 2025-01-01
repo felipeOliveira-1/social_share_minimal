@@ -195,7 +195,7 @@ app.get('/api/articles/:id', async (req, res) => {
 
 app.get('/api/articles', async (req, res) => {
   try {
-    const articles = await Article.find().maxTimeMS(30000); // Increased timeout
+    const articles = await Article.find().sort({ createdAt: -1 }).maxTimeMS(30000); // Increased timeout
     res.json(articles);
   } catch (err) {
     console.error('Erro ao buscar artigos:', err);
