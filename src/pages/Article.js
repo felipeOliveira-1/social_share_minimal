@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import Card from '../components/Card';
 import Button from '../components/Button';
 
@@ -13,12 +14,22 @@ const Article = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
+        console.log('Attempting to fetch article from:', `http://localhost:5001/api/articles/${id}`);
         const response = await axios.get(`http://localhost:5001/api/articles/${id}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'X-Request-ID': uuidv4()
           },
-          timeout: 5000
+          timeout: 5000,
+          validateStatus: function (status) {
+            return status < 500; // Reject only if the status code is greater than or equal to 500
+          }
+        });
+        console.log('Response received:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: response.data
         });
         setArticle(response.data);
       } catch (err) {

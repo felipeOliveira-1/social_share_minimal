@@ -147,6 +147,9 @@ app.get('/api/articles/:id', async (req, res) => {
   try {
     console.log(`[${new Date().toISOString()}] GET /api/articles/${req.params.id}`);
     console.log('Request headers:', req.headers);
+    console.log('Request IP:', req.ip);
+    console.log('Request host:', req.hostname);
+    console.log('Request protocol:', req.protocol);
     
     // Verifica se o ID é válido
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -159,7 +162,12 @@ app.get('/api/articles/:id', async (req, res) => {
     }
 
     console.log('Querying database for article...');
+    console.log('Mongoose connection state:', mongoose.connection.readyState);
+    console.log('Mongoose connection host:', mongoose.connection.host);
+    console.log('Mongoose connection port:', mongoose.connection.port);
+    
     const article = await Article.findById(req.params.id).maxTimeMS(30000);
+    console.log('Mongoose query executed successfully');
     
     if (!article) {
       console.error(`Artigo não encontrado para ID: ${req.params.id}`);
