@@ -42,6 +42,11 @@ app.get('/api/health', (req, res) => {
   }
 });
 
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ message: 'Test endpoint working' });
+});
+
 // Rotas da API
 app.get('/api/articles', async (req, res) => {
   try {
