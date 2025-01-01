@@ -1,1 +1,5 @@
-/* Move seu CSS existente aqui */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos personalizados podem ser adicionados aqui */
