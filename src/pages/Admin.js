@@ -21,13 +21,29 @@ const Admin = ({ articles, setArticles }) => {
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    
-    reader.onloadend = () => {
-      setCurrentArticle({ ...currentArticle, image: reader.result });
-    };
     
     if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('A imagem deve ter no máximo 5MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      
+      reader.onloadstart = () => {
+        setCurrentArticle(prev => ({ ...prev, image: 'loading...' }));
+      };
+      
+      reader.onloadend = () => {
+        setCurrentArticle(prev => ({ ...prev, image: reader.result }));
+      };
+      
+      reader.onerror = () => {
+        alert('Erro ao carregar a imagem');
+        setCurrentArticle(prev => ({ ...prev, image: '' }));
+      };
+      
       reader.readAsDataURL(file);
     }
   };

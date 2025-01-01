@@ -10,7 +10,8 @@ const articleSchema = new mongoose.Schema({
     required: true
   },
   image: {
-    type: String
+    type: String,
+    maxlength: 10000000 // ~10MB
   },
   createdAt: {
     type: Date,

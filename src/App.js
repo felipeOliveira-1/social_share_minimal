@@ -14,10 +14,13 @@ function App() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/articles');
+        const response = await axios.get('http://localhost:5000/api/articles', {
+          timeout: 10000 // 10 seconds timeout
+        });
         setArticles(response.data);
       } catch (error) {
         console.error('Erro ao buscar artigos:', error);
+        alert('Erro ao carregar artigos. Por favor, tente novamente mais tarde.');
       }
     };
 
