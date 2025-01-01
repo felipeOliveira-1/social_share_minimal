@@ -89,7 +89,7 @@ function App() {
                     ) : (
                       <div className="space-y-6">
                         {articles.map((article) => (
-                          <div key={article.id} className="border-b border-gray-200 pb-6">
+                          <div key={article._id} className="border-b border-gray-200 pb-6">
                             <h3 className="text-2xl font-bold mb-2">{article.title}</h3>
                             {article.image && (
                               <img 
