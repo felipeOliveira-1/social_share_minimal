@@ -83,7 +83,9 @@ const Admin = ({ articles, setArticles }) => {
       if (error.response && error.response.status === 413) {
         alert('O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.');
       } else if (error.response?.status === 500) {
-        alert('Erro no servidor ao salvar artigo. Verifique se o MongoDB está rodando e tente novamente.');
+        alert('Erro no servidor ao salvar artigo. Verifique se o servidor está rodando corretamente.');
+      } else if (error.code === 'ECONNABORTED') {
+        alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
       } else {
         alert('Erro ao salvar artigo. Por favor, tente novamente.');
       }

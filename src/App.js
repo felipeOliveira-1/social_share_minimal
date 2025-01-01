@@ -14,25 +14,27 @@ function App() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/articles', {
+        // First check server health
+        const healthResponse = await axios.get('http://localhost:5000/api/health', {
+          timeout: 5000
+        });
+        
+        if (!healthResponse.data.mongoConnected) {
+          alert('Erro: O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
+          return;
+        }
+
+        // Then fetch articles
+        const articlesResponse = await axios.get('http://localhost:5000/api/articles', {
           timeout: 30000 // 30 seconds timeout
         });
-        setArticles(response.data);
+        setArticles(articlesResponse.data);
       } catch (error) {
         console.error('Erro ao buscar artigos:', error);
         if (error.code === 'ECONNABORTED') {
           alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
         } else if (error.response?.status === 500) {
-          alert('Erro no servidor ao buscar artigos. Verifique se o MongoDB está rodando e tente novamente.');
-          // Try to get health status
-          try {
-            const health = await axios.get('http://localhost:5000/api/health');
-            if (!health.data.mongoConnected) {
-              alert('O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
-            }
-          } catch (healthError) {
-            console.error('Erro ao verificar saúde do servidor:', healthError);
-          }
+          alert('Erro no servidor ao buscar artigos. Por favor, verifique se o servidor está rodando corretamente.');
         } else if (error.response?.status === 404) {
           alert('Endpoint da API não encontrado. Verifique se o servidor está configurado corretamente.');
         } else {
