@@ -1,0 +1,11 @@
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+
+const AuthRoute = ({ children }) => {
+  // Aqui você pode implementar sua lógica de autenticação
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+export default AuthRoute;
