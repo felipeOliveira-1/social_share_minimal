@@ -23,7 +23,9 @@ function App() {
         if (error.code === 'ECONNABORTED') {
           alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
         } else if (error.response?.status === 500) {
-          alert('Erro no servidor ao buscar artigos. Por favor, tente novamente mais tarde.');
+          alert('Erro no servidor ao buscar artigos. Verifique se o MongoDB está rodando e tente novamente.');
+        } else if (error.response?.status === 404) {
+          alert('Endpoint da API não encontrado. Verifique se o servidor está configurado corretamente.');
         } else {
           alert('Erro ao carregar artigos. Por favor, tente novamente mais tarde.');
         }
