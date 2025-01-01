@@ -16,7 +16,12 @@ function App() {
       try {
         // First check server health
         try {
+          console.log('Checking server health...');
           const healthResponse = await axios.get('http://localhost:5000/health', {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
             timeout: 5000
           });
           

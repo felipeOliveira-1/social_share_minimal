@@ -41,8 +41,15 @@ mongoose.connect(process.env.MONGODB_URI, {
   process.exit(1); // Exit if we can't connect to MongoDB
 });
 
-// Health check endpoint
+// Debug middleware to log all incoming requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
+// Health check endpoint - moved to top
 app.get('/health', (req, res) => {
+  console.log('Health check endpoint hit');
   try {
     const mongoConnected = mongoose.connection.readyState === 1;
     res.status(200).json({ 
@@ -59,8 +66,9 @@ app.get('/health', (req, res) => {
   }
 });
 
-// Test endpoint
+// Test endpoint - moved after health check
 app.get('/test', (req, res) => {
+  console.log('Test endpoint hit');
   res.status(200).json({ message: 'Test endpoint working' });
 });
 
@@ -122,6 +130,24 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something broke!' });
 });
 
+// Catch-all route for undefined endpoints
+app.use((req, res) => {
+  console.log(`Route not found: ${req.method} ${req.url}`);
+  res.status(404).json({ 
+    error: 'Endpoint not found',
+    method: req.method,
+    path: req.url
+  });
+});
+
 app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log('Available endpoints:');
+  console.log('GET /health');
+  console.log('GET /test');
+  console.log('GET /api/articles');
+  console.log('POST /api/articles');
+  console.log('PUT /api/articles/:id');
+  console.log('DELETE /api/articles/:id');
   console.log(`Servidor rodando na porta ${PORT}`);
 });
