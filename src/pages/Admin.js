@@ -77,11 +77,16 @@ const Admin = ({ articles, setArticles }) => {
       };
 
       // Validação adicional no frontend
+      const validationErrors = [];
       if (!articleData.title || articleData.title.trim().length < 5) {
-        throw new Error('O título deve ter pelo menos 5 caracteres');
+        validationErrors.push('O título deve ter pelo menos 5 caracteres');
       }
       if (!articleData.content || articleData.content.trim().length < 50) {
-        throw new Error('O conteúdo deve ter pelo menos 50 caracteres');
+        validationErrors.push('O conteúdo deve ter pelo menos 50 caracteres');
+      }
+      if (validationErrors.length > 0) {
+        alert(`Erros de validação:\n${validationErrors.join('\n')}`);
+        return;
       }
 
       let response;
