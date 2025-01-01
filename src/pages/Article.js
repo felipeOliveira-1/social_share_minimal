@@ -14,18 +14,29 @@ const Article = () => {
     const fetchArticle = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/api/articles/${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           timeout: 5000
         });
         setArticle(response.data);
       } catch (err) {
         if (err.response?.status === 404) {
-          setError('Artigo não encontrado');
+          setError(`Artigo com ID ${id} não encontrado`);
         } else if (err.code === 'ECONNABORTED') {
-          setError('A requisição demorou muito para responder');
+          setError('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
+        } else if (err.response?.status === 400) {
+          setError('ID do artigo inválido');
         } else {
-          setError('Erro ao carregar o artigo');
+          setError('Erro ao carregar o artigo. Por favor, tente novamente mais tarde.');
         }
-        console.error('Erro ao buscar artigo:', err);
+        console.error('Erro ao buscar artigo:', {
+          message: err.message,
+          status: err.response?.status,
+          config: err.config,
+          stack: err.stack
+        });
       } finally {
         setLoading(false);
       }

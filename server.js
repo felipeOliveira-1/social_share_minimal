@@ -145,12 +145,16 @@ app.get('/test', (req, res) => {
 // Rotas da API
 app.get('/api/articles/:id', async (req, res) => {
   try {
+    console.log(`Buscando artigo com ID: ${req.params.id}`);
+    
     // Verifica se o ID é válido
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      console.log(`ID inválido: ${req.params.id}`);
       return res.status(400).json({ message: 'ID do artigo inválido' });
     }
 
     const article = await Article.findById(req.params.id).maxTimeMS(30000);
+    console.log(`Artigo encontrado: ${article}`);
     if (!article) {
       return res.status(404).json({ message: 'Artigo não encontrado' });
     }
