@@ -30,16 +30,37 @@ app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
 // Conexão com MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000
-})
-.then(() => console.log('Conectado ao MongoDB'))
-.catch(err => {
-  console.error('Erro ao conectar ao MongoDB:', err);
-  process.exit(1); // Exit if we can't connect to MongoDB
-});
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 30000 // Increased timeout to 30 seconds
+    });
+    console.log('Conectado ao MongoDB');
+  } catch (err) {
+    console.error('Erro ao conectar ao MongoDB:', err);
+    process.exit(1);
+  }
+};
+
+// Start server only after DB connection
+const startServer = async () => {
+  await connectDB();
+  
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log('Available endpoints:');
+    console.log('GET /health');
+    console.log('GET /test');
+    console.log('GET /api/articles');
+    console.log('POST /api/articles');
+    console.log('PUT /api/articles/:id');
+    console.log('DELETE /api/articles/:id');
+  });
+};
+
+startServer();
 
 // Debug middleware to log all incoming requests
 app.use((req, res, next) => {
@@ -75,7 +96,7 @@ app.get('/test', (req, res) => {
 // Rotas da API
 app.get('/api/articles', async (req, res) => {
   try {
-    const articles = await Article.find();
+    const articles = await Article.find().maxTimeMS(30000); // Increased timeout
     res.json(articles);
   } catch (err) {
     console.error('Erro ao buscar artigos:', err);
