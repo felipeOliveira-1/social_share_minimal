@@ -3,8 +3,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import { v4 as uuidv4 } from 'uuid';
 
-const Admin = () => {
-  const [articles, setArticles] = useState([]);
+const Admin = ({ articles, setArticles }) => {
   const [currentArticle, setCurrentArticle] = useState({
     id: '',
     title: '',
