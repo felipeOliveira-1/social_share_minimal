@@ -13,7 +13,7 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     // Aqui você pode implementar a lógica de autenticação real
-    if (credentials.email === 'seu_novo_email@dominio.com' && credentials.password === 'sua_nova_senha_segura') {
+    if (credentials.email === 'admin@example.com' && credentials.password === 'admin123') {
       localStorage.setItem('isAuthenticated', 'true');
       navigate('/admin');
     } else {
