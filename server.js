@@ -31,7 +31,13 @@ app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
 // Conexão com MongoDB
 const connectDB = async () => {
+  if (!process.env.MONGODB_URI) {
+    console.error('Erro: MONGODB_URI não está definido no arquivo .env');
+    process.exit(1);
+  }
+
   try {
+    console.log('Conectando ao MongoDB...');
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
