@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Button from './components/Button';
@@ -9,6 +10,19 @@ import AuthRoute from './components/AuthRoute';
 
 function App() {
   const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/articles');
+        setArticles(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar artigos:', error);
+      }
+    };
+
+    fetchArticles();
+  }, []);
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100">

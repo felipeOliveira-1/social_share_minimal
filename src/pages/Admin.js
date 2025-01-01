@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,32 +32,36 @@ const Admin = ({ articles, setArticles }) => {
     }
   };
 
-  const handleSaveArticle = (e) => {
+  const handleSaveArticle = async (e) => {
     e.preventDefault();
     
-    // Verifica se o título foi preenchido
     if (!currentArticle.title.trim()) {
       alert('Por favor, insira um título para o artigo');
       return;
     }
     
-    if (isEditing) {
-      setArticles(articles.map(article => 
-        article.id === currentArticle.id ? currentArticle : article
-      ));
-    } else {
-      setArticles([...articles, { ...currentArticle, id: uuidv4() }]);
+    try {
+      let response;
+      if (isEditing) {
+        response = await axios.put(`http://localhost:5000/api/articles/${currentArticle._id}`, currentArticle);
+        setArticles(articles.map(article => 
+          article._id === currentArticle._id ? response.data : article
+        ));
+      } else {
+        response = await axios.post('http://localhost:5000/api/articles', currentArticle);
+        setArticles([...articles, response.data]);
+      }
+      
+      setCurrentArticle({
+        title: '',
+        content: '',
+        image: '',
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Erro ao salvar artigo:', error);
+      alert('Erro ao salvar artigo');
     }
-    
-    // Limpa o formulário
-    setCurrentArticle({
-      id: '',
-      title: '',
-      content: '',
-      image: '',
-      published: false
-    });
-    setIsEditing(false);
   };
 
   const handleEditArticle = (article) => {
@@ -64,8 +69,14 @@ const Admin = ({ articles, setArticles }) => {
     setIsEditing(true);
   };
 
-  const handleDeleteArticle = (id) => {
-    setArticles(articles.filter(article => article.id !== id));
+  const handleDeleteArticle = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/articles/${id}`);
+      setArticles(articles.filter(article => article._id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar artigo:', error);
+      alert('Erro ao deletar artigo');
+    }
   };
 
   return (
