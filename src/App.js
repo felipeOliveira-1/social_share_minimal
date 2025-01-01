@@ -16,7 +16,7 @@ function App() {
       try {
         // First check server health
         try {
-          const healthResponse = await axios.get('http://localhost:5000/api/health', {
+          const healthResponse = await axios.get('http://localhost:5000/health', {
             timeout: 5000
           });
           
