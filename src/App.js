@@ -15,12 +15,18 @@ function App() {
     const fetchArticles = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/articles', {
-          timeout: 10000 // 10 seconds timeout
+          timeout: 30000 // 30 seconds timeout
         });
         setArticles(response.data);
       } catch (error) {
         console.error('Erro ao buscar artigos:', error);
-        alert('Erro ao carregar artigos. Por favor, tente novamente mais tarde.');
+        if (error.code === 'ECONNABORTED') {
+          alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
+        } else if (error.response?.status === 500) {
+          alert('Erro no servidor ao buscar artigos. Por favor, tente novamente mais tarde.');
+        } else {
+          alert('Erro ao carregar artigos. Por favor, tente novamente mais tarde.');
+        }
       }
     };
 

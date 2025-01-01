@@ -23,7 +23,11 @@ app.get('/api/articles', async (req, res) => {
     const articles = await Article.find();
     res.json(articles);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Erro ao buscar artigos:', err);
+    res.status(500).json({ 
+      message: 'Erro interno do servidor',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
