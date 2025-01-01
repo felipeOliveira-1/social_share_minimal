@@ -13,11 +13,19 @@ const Article = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/articles/${id}`);
+        const response = await axios.get(`http://localhost:5001/api/articles/${id}`, {
+          timeout: 5000
+        });
         setArticle(response.data);
       } catch (err) {
-        setError('Erro ao carregar o artigo');
-        console.error(err);
+        if (err.response?.status === 404) {
+          setError('Artigo não encontrado');
+        } else if (err.code === 'ECONNABORTED') {
+          setError('A requisição demorou muito para responder');
+        } else {
+          setError('Erro ao carregar o artigo');
+        }
+        console.error('Erro ao buscar artigo:', err);
       } finally {
         setLoading(false);
       }
