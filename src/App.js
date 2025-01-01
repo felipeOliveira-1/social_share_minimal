@@ -15,28 +15,33 @@ function App() {
     const fetchArticles = async () => {
       try {
         // First check server health
-        try {
-          console.log('Checking server health...');
-          const healthResponse = await axios.get('http://localhost:5000/health', {
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            timeout: 5000
-          });
-          
-          if (!healthResponse.data.mongoConnected) {
-            alert('Erro: O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
-            return;
+        let retries = 3;
+        while (retries > 0) {
+          try {
+            console.log('Checking server health...');
+            const healthResponse = await axios.get('http://localhost:5000/health', {
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              timeout: 5000
+            });
+            
+            if (!healthResponse.data.mongoConnected) {
+              alert('Erro: O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
+              return;
+            }
+            break; // Success - exit retry loop
+          } catch (error) {
+            retries--;
+            if (retries === 0) {
+              console.error('Erro ao verificar saúde do servidor:', error);
+              alert('Não foi possível conectar ao servidor. Por favor:\n1. Verifique se o servidor está rodando\n2. Tente recarregar a página\n3. Entre em contato com o suporte técnico');
+              return;
+            }
+            // Wait 2 seconds before retrying
+            await new Promise(resolve => setTimeout(resolve, 2000));
           }
-        } catch (error) {
-          console.error('Erro ao verificar saúde do servidor:', error);
-          if (error.response?.status === 404) {
-            alert('Endpoint de verificação de saúde não encontrado. Verifique se o servidor está configurado corretamente.');
-          } else {
-            alert('Erro ao verificar a saúde do servidor. Por favor, verifique se o servidor está rodando.');
-          }
-          return;
         }
 
         // Then fetch articles
