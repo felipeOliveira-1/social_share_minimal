@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+// Configure axios to handle larger payloads
+axios.defaults.maxContentLength = 50 * 1024 * 1024; // 50MB
+axios.defaults.maxBodyLength = 50 * 1024 * 1024; // 50MB
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { v4 as uuidv4 } from 'uuid';
@@ -76,7 +80,11 @@ const Admin = ({ articles, setArticles }) => {
       setIsEditing(false);
     } catch (error) {
       console.error('Erro ao salvar artigo:', error);
-      alert('Erro ao salvar artigo');
+      if (error.response && error.response.status === 413) {
+        alert('O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.');
+      } else {
+        alert('Erro ao salvar artigo. Por favor, tente novamente.');
+      }
     }
   };
 
