@@ -52,6 +52,15 @@ const Admin = ({ articles, setArticles }) => {
     }
   };
 
+  const generateSlug = (title) => {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove special chars
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(/--+/g, '-') // Replace multiple - with single -
+      .trim();
+  };
+
   const handleSaveArticle = async (e) => {
     e.preventDefault();
     
@@ -61,14 +70,19 @@ const Admin = ({ articles, setArticles }) => {
     }
     
     try {
+      const articleData = {
+        ...currentArticle,
+        slug: generateSlug(currentArticle.title)
+      };
+      
       let response;
       if (isEditing) {
-        response = await axios.put(`http://localhost:5001/api/articles/${currentArticle._id}`, currentArticle);
+        response = await axios.put(`http://localhost:5001/api/articles/${currentArticle._id}`, articleData);
         setArticles(articles.map(article => 
           article._id === currentArticle._id ? response.data : article
         ));
       } else {
-        response = await axios.post('http://localhost:5001/api/articles', currentArticle);
+        response = await axios.post('http://localhost:5001/api/articles', articleData);
         setArticles([...articles, response.data]);
       }
       
