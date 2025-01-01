@@ -19,7 +19,7 @@ function App() {
         while (retries > 0) {
           try {
             console.log('Checking server health...');
-            const healthResponse = await axios.get('http://localhost:5000/health', {
+            const healthResponse = await axios.get('http://localhost:5001/health', {
               headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -45,7 +45,7 @@ function App() {
         }
 
         // Then fetch articles
-        const articlesResponse = await axios.get('http://localhost:5000/api/articles', {
+        const articlesResponse = await axios.get('http://localhost:5001/api/articles', {
           timeout: 30000 // 30 seconds timeout
         });
         setArticles(articlesResponse.data);

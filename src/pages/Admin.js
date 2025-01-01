@@ -63,12 +63,12 @@ const Admin = ({ articles, setArticles }) => {
     try {
       let response;
       if (isEditing) {
-        response = await axios.put(`http://localhost:5000/api/articles/${currentArticle._id}`, currentArticle);
+        response = await axios.put(`http://localhost:5001/api/articles/${currentArticle._id}`, currentArticle);
         setArticles(articles.map(article => 
           article._id === currentArticle._id ? response.data : article
         ));
       } else {
-        response = await axios.post('http://localhost:5000/api/articles', currentArticle);
+        response = await axios.post('http://localhost:5001/api/articles', currentArticle);
         setArticles([...articles, response.data]);
       }
       
@@ -99,7 +99,7 @@ const Admin = ({ articles, setArticles }) => {
 
   const handleDeleteArticle = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/articles/${id}`);
+      await axios.delete(`http://localhost:5001/api/articles/${id}`);
       setArticles(articles.filter(article => article._id !== id));
     } catch (error) {
       console.error('Erro ao deletar artigo:', error);
