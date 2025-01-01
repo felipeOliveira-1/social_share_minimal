@@ -11,13 +11,28 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
   origin: (origin, callback) => {
     console.log('Incoming origin:', origin);
-    callback(null, true); // Allow all origins
+    // Allow all origins or specific ones
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5002'
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  exposedHeaders: ['Access-Control-Allow-Origin']
 };
+
 app.use(cors(corsOptions));
+
+// Add manual CORS headers for preflight requests
+app.options('*', cors(corsOptions));
 
 // Content Security Policy
 app.use((req, res, next) => {
