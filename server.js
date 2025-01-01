@@ -54,8 +54,26 @@ const connectDB = async () => {
 const startServer = async () => {
   await connectDB();
   
-  const server = app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+  const findAvailablePort = async (port) => {
+    const net = require('net');
+    return new Promise((resolve) => {
+      const server = net.createServer();
+      server.unref();
+      server.on('error', () => resolve(findAvailablePort(port + 1)));
+      server.listen({ port }, () => {
+        server.close(() => resolve(port));
+      });
+    });
+  };
+
+  const availablePort = await findAvailablePort(PORT);
+  
+  if (availablePort !== PORT) {
+    console.warn(`Aviso: Porta ${PORT} está em uso. Usando porta ${availablePort} como alternativa.`);
+  }
+
+  const server = app.listen(availablePort, () => {
+    console.log(`Servidor rodando na porta ${availablePort}`);
     console.log('Available endpoints:');
     console.log('GET /health');
     console.log('GET /test');
@@ -66,15 +84,8 @@ const startServer = async () => {
   });
 
   server.on('error', (error) => {
-    if (error.code === 'EADDRINUSE') {
-      console.error(`Erro: A porta ${PORT} já está em uso.`);
-      console.log('Tente os seguintes passos:');
-      console.log('1. Feche outras instâncias do servidor que possam estar rodando');
-      console.log(`2. Ou use uma porta diferente modificando a variável PORT no arquivo .env`);
-      process.exit(1);
-    } else {
-      throw error;
-    }
+    console.error('Erro no servidor:', error);
+    process.exit(1);
   });
 };
 
