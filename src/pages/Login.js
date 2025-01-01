@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Card } from '../components';
+import Button from '../components/Button';
+import Card from '../components/Card';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
