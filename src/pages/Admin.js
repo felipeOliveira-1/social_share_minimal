@@ -20,9 +20,15 @@ const Admin = ({ articles, setArticles }) => {
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    // Aqui você pode integrar com um serviço como Cloudinary
-    const imageUrl = URL.createObjectURL(file);
-    setCurrentArticle({ ...currentArticle, image: imageUrl });
+    const reader = new FileReader();
+    
+    reader.onloadend = () => {
+      setCurrentArticle({ ...currentArticle, image: reader.result });
+    };
+    
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveArticle = (e) => {

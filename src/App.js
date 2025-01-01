@@ -37,9 +37,12 @@ function App() {
                             <h3 className="text-2xl font-bold mb-2">{article.title}</h3>
                             {article.image && (
                               <img 
-                                src={article.image} 
-                                alt={article.title} 
+                                src={article.image}
+                                alt={article.title}
                                 className="my-4 rounded-lg shadow-md max-w-full h-auto"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
                               />
                             )}
                             <p className="text-gray-700 whitespace-pre-line">
