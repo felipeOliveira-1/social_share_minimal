@@ -79,7 +79,7 @@ app.delete('/api/articles/:id', async (req, res) => {
 app.get('/api/health', (req, res) => {
   try {
     const mongoConnected = mongoose.connection.readyState === 1;
-    res.json({ 
+    res.status(200).json({ 
       status: 'ok', 
       mongoConnected,
       serverTime: new Date().toISOString(),

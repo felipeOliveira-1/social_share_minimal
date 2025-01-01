@@ -15,12 +15,22 @@ function App() {
     const fetchArticles = async () => {
       try {
         // First check server health
-        const healthResponse = await axios.get('http://localhost:5000/api/health', {
-          timeout: 5000
-        });
-        
-        if (!healthResponse.data.mongoConnected) {
-          alert('Erro: O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
+        try {
+          const healthResponse = await axios.get('http://localhost:5000/api/health', {
+            timeout: 5000
+          });
+          
+          if (!healthResponse.data.mongoConnected) {
+            alert('Erro: O servidor não está conectado ao MongoDB. Por favor, verifique a conexão do banco de dados.');
+            return;
+          }
+        } catch (error) {
+          console.error('Erro ao verificar saúde do servidor:', error);
+          if (error.response?.status === 404) {
+            alert('Endpoint de verificação de saúde não encontrado. Verifique se o servidor está configurado corretamente.');
+          } else {
+            alert('Erro ao verificar a saúde do servidor. Por favor, verifique se o servidor está rodando.');
+          }
           return;
         }
 
