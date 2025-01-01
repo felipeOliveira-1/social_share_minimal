@@ -41,7 +41,6 @@ function App() {
               </main>
             </>
           } />
-  </Route>
           <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
