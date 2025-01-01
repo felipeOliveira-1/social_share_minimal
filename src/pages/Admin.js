@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Card } from '../components';
+import Button from '../components/Button';
+import Card from '../components/Card';
 
 const Admin = () => {
   return (
