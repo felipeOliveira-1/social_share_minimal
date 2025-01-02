@@ -64,51 +64,55 @@ const Admin = ({ articles, setArticles }) => {
   const handleSaveArticle = async (e) => {
     e.preventDefault();
     
-    if (!currentArticle.title.trim()) {
-      alert('Por favor, insira um título para o artigo');
+    // Validação inicial
+    const validationErrors = [];
+    if (!currentArticle.title || currentArticle.title.trim().length < 5) {
+      validationErrors.push('O título deve ter pelo menos 5 caracteres');
+    }
+    if (!currentArticle.content || currentArticle.content.trim().length < 50) {
+      validationErrors.push('O conteúdo deve ter pelo menos 50 caracteres');
+    }
+    if (validationErrors.length > 0) {
+      alert(`Erros de validação:\n${validationErrors.join('\n')}`);
       return;
     }
     
     try {
       const articleData = {
-        ...currentArticle,
+        title: currentArticle.title.trim(),
+        content: currentArticle.content.trim(),
+        image: currentArticle.image,
         slug: generateSlug(currentArticle.title),
-        createdAt: new Date() // Adiciona timestamp
+        createdAt: new Date()
       };
 
-      // Validação adicional no frontend
-      const validationErrors = [];
-      if (!articleData.title || articleData.title.trim().length < 5) {
-        validationErrors.push('O título deve ter pelo menos 5 caracteres');
-      }
-      if (!articleData.content || articleData.content.trim().length < 50) {
-        validationErrors.push('O conteúdo deve ter pelo menos 50 caracteres');
-      }
-      if (validationErrors.length > 0) {
-        alert(`Erros de validação:\n${validationErrors.join('\n')}`);
-        return;
-      }
-
       let response;
-      try {
-        if (isEditing) {
-          response = await axios.put(`http://localhost:5001/api/articles/${currentArticle._id}`, articleData, {
-            timeout: 10000 // 10 segundos timeout
-          });
-          setArticles(articles.map(article => 
-            article._id === currentArticle._id ? response.data : article
-          ));
-        } else {
-          response = await axios.post('http://localhost:5001/api/articles', articleData, {
-            timeout: 10000 // 10 segundos timeout
-          });
-          setArticles([...articles, response.data]);
-        }
-      } catch (error) {
-        if (error.response?.data?.errors) {
-          throw new Error(error.response.data.errors.join('\n'));
-        }
-        throw error;
+      if (isEditing) {
+        response = await axios.put(
+          `http://localhost:5001/api/articles/${currentArticle._id}`,
+          articleData,
+          {
+            timeout: 10000,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        setArticles(articles.map(article => 
+          article._id === currentArticle._id ? response.data : article
+        ));
+      } else {
+        response = await axios.post(
+          'http://localhost:5001/api/articles',
+          articleData,
+          {
+            timeout: 10000,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        setArticles([...articles, response.data]);
       }
       
       setCurrentArticle({
@@ -118,28 +122,30 @@ const Admin = ({ articles, setArticles }) => {
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Erro ao salvar artigo:', {
-        message: error.message,
-        response: error.response?.data,
-        config: error.config
-      });
-
+      console.error('Erro ao salvar artigo:', error);
+      
+      let errorMessage = 'Erro ao salvar artigo. Por favor, tente novamente.';
+      
       if (error.response) {
         if (error.response.status === 400) {
-          const errors = error.response.data?.errors || [error.response.data?.message];
-          alert(`Erro de validação:\n${errors.join('\n')}`);
+          const errors = error.response.data?.errors || 
+                        error.response.data?.message || 
+                        'Dados inválidos enviados ao servidor';
+          errorMessage = `Erro de validação:\n${Array.isArray(errors) ? errors.join('\n') : errors}`;
         } else if (error.response.status === 413) {
-          alert('O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.');
+          errorMessage = 'O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.';
         } else if (error.response.status === 500) {
-          alert('Erro no servidor ao salvar artigo. Verifique se o servidor está rodando corretamente.');
+          errorMessage = 'Erro no servidor ao salvar artigo. Verifique se o servidor está rodando corretamente.';
         } else {
-          alert(`Erro ao salvar artigo: ${error.response.status} - ${error.response.statusText}`);
+          errorMessage = `Erro ${error.response.status}: ${error.response.statusText}`;
         }
       } else if (error.code === 'ECONNABORTED') {
-        alert('A requisição demorou muito para responder. Verifique sua conexão com a internet.');
-      } else {
-        alert('Erro ao salvar artigo. Por favor, tente novamente.');
+        errorMessage = 'A requisição demorou muito para responder. Verifique sua conexão com a internet.';
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+      
+      alert(errorMessage);
     }
   };
 
