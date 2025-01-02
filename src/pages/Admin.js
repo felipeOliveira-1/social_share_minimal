@@ -54,10 +54,12 @@ const Admin = ({ articles, setArticles }) => {
     }
   };
 
-  const quillRef = useRef(null);
-  const editorRef = useRef(null);
+  const quillRef = useRef({
+    editor: null,
+    wrapper: null
+  });
 
-  const handleImageInsert = () => {
+  const handleImageInsert = useCallback(() => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
@@ -72,10 +74,10 @@ const Admin = ({ articles, setArticles }) => {
         
         const reader = new FileReader();
         reader.onload = () => {
-          if (editorRef.current) {
-            const range = editorRef.current.getSelection();
+          if (quillRef.current.editor) {
+            const range = quillRef.current.editor.getSelection();
             if (range) {
-              editorRef.current.insertEmbed(range.index, 'image', reader.result);
+              quillRef.current.editor.insertEmbed(range.index, 'image', reader.result);
             }
           }
         };
@@ -84,7 +86,7 @@ const Admin = ({ articles, setArticles }) => {
     };
     
     input.click();
-  };
+  }, []);
 
   const generateSlug = (title) => {
     return title
@@ -253,16 +255,16 @@ const Admin = ({ articles, setArticles }) => {
               <label className="block text-sm font-medium text-gray-700">
                 Conteúdo
               </label>
-              <ReactQuill
-                theme="snow"
-                value={currentArticle.content}
-                onChange={(value) => setCurrentArticle({ ...currentArticle, content: value })}
-                ref={(el) => {
-                  quillRef.current = el;
-                  if (el) {
-                    editorRef.current = el.getEditor();
-                  }
-                }}
+              <div ref={el => quillRef.current.wrapper = el}>
+                <ReactQuill
+                  theme="snow"
+                  value={currentArticle.content}
+                  onChange={(value) => setCurrentArticle({ ...currentArticle, content: value })}
+                  ref={el => {
+                    if (el) {
+                      quillRef.current.editor = el.getEditor();
+                    }
+                  }}
                 modules={{
                   toolbar: {
                     container: [
