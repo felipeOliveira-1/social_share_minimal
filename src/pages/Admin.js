@@ -288,6 +288,7 @@ const Admin = ({ articles, setArticles }) => {
                   'list', 'bullet',
                   'link', 'image',
                   'align'
+                ]}
                 modules={{
                   toolbar: {
                     container: [
