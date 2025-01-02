@@ -265,55 +265,32 @@ const Admin = ({ articles, setArticles }) => {
                       quillRef.current.editor = el.getEditor();
                     }
                   }}
+                  modules={{
+                    toolbar: {
+                      container: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        [{ 'align': [] }],
+                        ['clean']
+                      ],
+                      handlers: {
+                        image: handleImageInsert
+                      }
+                    }
+                  }}
+                  formats={[
+                    'header',
+                    'bold', 'italic', 'underline', 'strike',
+                    'list', 'bullet',
+                    'link', 'image',
+                    'align'
+                  ]}
+                  className="mt-1 bg-white rounded-md"
+                  style={{ minHeight: '300px' }}
                 />
               </div>
-                modules={{
-                  toolbar: {
-                    container: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['link', 'image'],
-                      [{ 'align': [] }],
-                      ['clean']
-                    ],
-                    handlers: {
-                      image: handleImageInsert
-                    }
-                  },
-                }}
-                formats={[
-                  'header',
-                  'bold', 'italic', 'underline', 'strike',
-                  'list', 'bullet',
-                  'link', 'image',
-                  'align'
-                ]}
-                modules={{
-                  toolbar: {
-                    container: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['link', 'image'],
-                      [{ 'align': [] }],
-                      ['clean']
-                    ],
-                    handlers: {
-                      image: handleImageInsert
-                    }
-                  },
-                }}
-                formats={[
-                  'header',
-                  'bold', 'italic', 'underline', 'strike',
-                  'list', 'bullet',
-                  'link', 'image',
-                  'align'
-                ]}
-                className="mt-1 bg-white rounded-md"
-                style={{ minHeight: '300px' }}
-              />
             </div>
 
             <div>
