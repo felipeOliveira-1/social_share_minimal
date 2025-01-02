@@ -11,6 +11,12 @@ import AuthRoute from './components/AuthRoute';
 
 function App() {
   const [articles, setArticles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 5;
+
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -93,7 +99,7 @@ function App() {
                       </p>
                     ) : (
                       <div className="space-y-6">
-                        {articles.map((article) => (
+                        {currentArticles.map((article) => (
                           <Link 
                             to={`/article/${article._id}`} 
                             key={article._id} 
@@ -130,6 +136,16 @@ function App() {
                       </Button>
                     </div>
                   </Card>
+                  {articles.length > articlesPerPage && (
+                    <div className="mt-6 flex justify-center">
+                      <Button 
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        variant="secondary"
+                      >
+                        Artigos mais antigos
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </main>
             </>
