@@ -55,6 +55,7 @@ const Admin = ({ articles, setArticles }) => {
   };
 
   const quillRef = useRef(null);
+  const editorRef = useRef(null);
 
   const handleImageInsert = () => {
     const input = document.createElement('input');
@@ -71,11 +72,10 @@ const Admin = ({ articles, setArticles }) => {
         
         const reader = new FileReader();
         reader.onload = () => {
-          if (quillRef.current) {
-            const editor = quillRef.current.getEditor();
-            const range = editor.getSelection();
+          if (editorRef.current) {
+            const range = editorRef.current.getSelection();
             if (range) {
-              editor.insertEmbed(range.index, 'image', reader.result);
+              editorRef.current.insertEmbed(range.index, 'image', reader.result);
             }
           }
         };
@@ -257,7 +257,12 @@ const Admin = ({ articles, setArticles }) => {
                 theme="snow"
                 value={currentArticle.content}
                 onChange={(value) => setCurrentArticle({ ...currentArticle, content: value })}
-                ref={quillRef}
+                ref={(el) => {
+                  quillRef.current = el;
+                  if (el) {
+                    editorRef.current = el.getEditor();
+                  }
+                }}
                 modules={{
                   toolbar: {
                     container: [
