@@ -78,13 +78,20 @@ const Admin = ({ articles, setArticles }) => {
     }
     
     try {
+      // Limpa e valida os dados antes de enviar
       const articleData = {
         title: currentArticle.title.trim(),
         content: currentArticle.content.trim(),
-        image: currentArticle.image,
+        image: currentArticle.image || null, // Garante que image seja null se estiver vazio
         slug: generateSlug(currentArticle.title),
-        createdAt: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
+
+      // Validação adicional do slug
+      if (!articleData.slug || articleData.slug.length < 3) {
+        throw new Error('Slug inválido gerado a partir do título');
+      }
 
       let response;
       if (isEditing) {
@@ -122,16 +129,28 @@ const Admin = ({ articles, setArticles }) => {
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Erro ao salvar artigo:', error);
+      console.error('Erro ao salvar artigo:', {
+        message: error.message,
+        response: error.response?.data,
+        stack: error.stack
+      });
       
       let errorMessage = 'Erro ao salvar artigo. Por favor, tente novamente.';
       
       if (error.response) {
+        const responseData = error.response.data;
+        
         if (error.response.status === 400) {
-          const errors = error.response.data?.errors || 
-                        error.response.data?.message || 
-                        'Dados inválidos enviados ao servidor';
-          errorMessage = `Erro de validação:\n${Array.isArray(errors) ? errors.join('\n') : errors}`;
+          // Trata diferentes formatos de erro 400
+          if (Array.isArray(responseData.errors)) {
+            errorMessage = `Erros de validação:\n${responseData.errors.join('\n')}`;
+          } else if (responseData.message) {
+            errorMessage = responseData.message;
+          } else if (typeof responseData === 'string') {
+            errorMessage = responseData;
+          } else {
+            errorMessage = 'Dados inválidos enviados ao servidor. Verifique os campos preenchidos.';
+          }
         } else if (error.response.status === 413) {
           errorMessage = 'O arquivo de imagem é muito grande. Por favor, use uma imagem menor que 5MB.';
         } else if (error.response.status === 500) {
@@ -144,6 +163,9 @@ const Admin = ({ articles, setArticles }) => {
       } else if (error.message) {
         errorMessage = error.message;
       }
+
+      // Exibe o erro de forma mais amigável
+      alert(`Erro ao salvar artigo:\n\n${errorMessage}\n\nPor favor, verifique os dados e tente novamente.`);
       
       alert(errorMessage);
     }
