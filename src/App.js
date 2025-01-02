@@ -49,7 +49,11 @@ function App() {
         const articlesResponse = await axios.get('http://localhost:5001/api/articles', {
           timeout: 30000 // 30 seconds timeout
         });
-        setArticles(articlesResponse.data);
+        // Ordena os artigos do mais recente para o mais antigo
+        const sortedArticles = articlesResponse.data.sort((a, b) => 
+          new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setArticles(sortedArticles);
       } catch (error) {
         console.error('Erro ao buscar artigos:', error);
         if (error.code === 'ECONNABORTED') {
