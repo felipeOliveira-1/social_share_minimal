@@ -3,6 +3,8 @@ import axios from 'axios';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { v4 as uuidv4 } from 'uuid';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 // Configure axios to handle larger payloads
 axios.defaults.maxContentLength = 100 * 1024 * 1024; // 100MB
@@ -219,13 +221,34 @@ const Admin = ({ articles, setArticles }) => {
               <label className="block text-sm font-medium text-gray-700">
                 Conteúdo
               </label>
-              <textarea
-                name="content"
+              <ReactQuill
+                theme="snow"
                 value={currentArticle.content}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                rows="6"
-                required
+                onChange={(value) => setCurrentArticle({ ...currentArticle, content: value })}
+                modules={{
+                  toolbar: {
+                    container: [
+                      [{ 'header': [1, 2, 3, false] }],
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      ['link', 'image'],
+                      [{ 'align': [] }],
+                      ['clean']
+                    ],
+                    handlers: {
+                      image: handleImageInsert
+                    }
+                  },
+                }}
+                formats={[
+                  'header',
+                  'bold', 'italic', 'underline', 'strike',
+                  'list', 'bullet',
+                  'link', 'image',
+                  'align'
+                ]}
+                className="mt-1 bg-white rounded-md"
+                style={{ minHeight: '300px' }}
               />
             </div>
 

@@ -89,9 +89,10 @@ const Article = () => {
               className="w-full h-auto max-h-96 object-cover rounded-lg shadow-md"
             />
           )}
-          <div className="prose max-w-none">
-            <p className="text-gray-700 whitespace-pre-line">{article.content}</p>
-          </div>
+          <div 
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: article.content }}
+          />
           <div className="flex justify-end">
             <Link to="/">
               <Button variant="secondary">Voltar</Button>
