@@ -265,6 +265,8 @@ const Admin = ({ articles, setArticles }) => {
                       quillRef.current.editor = el.getEditor();
                     }
                   }}
+                />
+              </div>
                 modules={{
                   toolbar: {
                     container: [
