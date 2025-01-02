@@ -119,7 +119,7 @@ const Admin = ({ articles, setArticles }) => {
             }
           }
         );
-        setArticles([...articles, response.data]);
+        setArticles([response.data, ...articles]);
       }
       
       setCurrentArticle({
