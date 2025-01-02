@@ -54,6 +54,32 @@ const Admin = ({ articles, setArticles }) => {
     }
   };
 
+  const handleImageInsert = () => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert('A imagem deve ter no máximo 5MB');
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = () => {
+          const quill = document.querySelector('.ql-editor').__quill;
+          const range = quill.getSelection();
+          quill.insertEmbed(range.index, 'image', reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    
+    input.click();
+  };
+
   const generateSlug = (title) => {
     return title
       .toLowerCase()
