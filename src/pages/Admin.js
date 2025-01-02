@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -54,6 +54,8 @@ const Admin = ({ articles, setArticles }) => {
     }
   };
 
+  const [quillRef, setQuillRef] = useState(null);
+
   const handleImageInsert = () => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
@@ -69,9 +71,12 @@ const Admin = ({ articles, setArticles }) => {
         
         const reader = new FileReader();
         reader.onload = () => {
-          const quill = document.querySelector('.ql-editor').__quill;
-          const range = quill.getSelection();
-          quill.insertEmbed(range.index, 'image', reader.result);
+          if (quillRef) {
+            const range = quillRef.getSelection();
+            if (range) {
+              quillRef.insertEmbed(range.index, 'image', reader.result);
+            }
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -251,6 +256,7 @@ const Admin = ({ articles, setArticles }) => {
                 theme="snow"
                 value={currentArticle.content}
                 onChange={(value) => setCurrentArticle({ ...currentArticle, content: value })}
+                ref={(el) => setQuillRef(el)}
                 modules={{
                   toolbar: {
                     container: [
